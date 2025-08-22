@@ -1,0 +1,64 @@
+services:
+  user-service:
+    build:
+      context: .
+      dockerfile: ./services/users-service/Dockerfile
+    container_name: fms_user_service
+    env_file:
+      - ./.env
+    networks:
+      - fms_network
+
+  version-service:
+    build:
+      context: .
+      dockerfile: ./services/version-service/Dockerfile
+    container_name: fms_version_service
+    volumes:
+      - ./uploads:/app/uploads
+    env_file:
+      - ./.env
+    networks:
+      - fms_network
+
+  hierarchy-service:
+    build:
+      context: .
+      dockerfile: ./services/hierarchy-service/Dockerfile
+    container_name: fms_hierarchy_service
+    env_file:
+      - ./.env
+    networks:
+      - fms_network
+
+  mongo:
+    image: mongo:6
+    container_name: fms_mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - fms_network
+
+  nginx:
+    image: nginx:latest
+    container_name: fms_nginx
+    ports:
+      - "8080:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - user-service
+      - version-service
+      - hierarchy-service
+      - mongo
+    networks:
+      - fms_network
+
+volumes:
+  mongo_data:
+
+networks:
+  fms_network:
+    driver: bridge
