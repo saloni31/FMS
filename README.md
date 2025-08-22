@@ -40,7 +40,7 @@ cd <repository-directory>
 ```
 
 ## Environment Variables
-Create a .env file in the root project and past all env
+Create a .env file in the root project and save all the env varibles
 
 ## Docker Setup
 
