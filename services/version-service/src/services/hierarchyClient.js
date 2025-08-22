@@ -1,5 +1,6 @@
 import axios from "axios";
 import dotenv from "dotenv";
+import AppError from "../utils/appError.js";
 
 dotenv.config();
 
@@ -15,6 +16,6 @@ export const fetchFolderParents = async (folderId, token) => {
         );
         return res.data.data;
     } catch (err) {
-        throw new Error(`Failed to resolve folder hierarchy: ${err.message}`);
+        throw new AppError(`Failed to resolve folder hierarchy: ${err.message}`);
     }
 };

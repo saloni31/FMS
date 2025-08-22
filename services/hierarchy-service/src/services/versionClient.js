@@ -4,6 +4,9 @@ import AppError from "../utils/appError.js";
 import {MESSAGES} from "../constants/messageConstants.js";
 import {STATUS_CODES} from "@fms/common-auth";
 import Folder from "../models/folders.js";
+import fs from "fs";
+import path from "path";
+import folderService from "./folderService.js";
 dotenv.config();
 
 const VERSION_SERVICE_URL = process.env.VERSION_SERVICE_URL || "http://fms_version_service:3000";
@@ -56,7 +59,16 @@ export const deleteFolderRecursively = async (folderId, userId, token) => {
         await deleteFolderRecursively(sub._id, userId, token);
     }
 
+
+    const parents = await folderService.getFolderWithParents(folderId);
+    const parts = parents.map(p => p.name);
+    const root = process.env.UPLOAD_ROOT || "/app/uploads/";
+    const folderPath = path.join(root, ...parts).replace(" ","_");
+    if (fs.existsSync(folderPath)) {
+        fs.rmSync(folderPath, { recursive: true, force: true });
+    }
     await Folder.deleteOne({ _id: folderId, createdBy: userId });
+
 
     return true;
 };

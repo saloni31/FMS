@@ -74,8 +74,12 @@ class FolderService {
      * @returns Void
      */
     deleteFolder = async (folderId, userId,token) => {
+        const folder = await Folder.findOne({ _id: folderId, createdBy: userId });
 
-        await this._deleteFolderRecursively(folderId, userId,token);
+        if (!folder) {
+            throw new AppError(MESSAGES.FOLDER.ERROR.FOLDER_NOT_FOUND, STATUS_CODES.NOT_FOUND);
+        }
+        await deleteFolderRecursively(folderId, userId,token);
 
         return {
             message: MESSAGES.FOLDER.SUCCESS.FOLDER_DELETED,
@@ -135,35 +139,6 @@ class FolderService {
             documents,
             subfolders: subfolderContents,
         };
-    };
-
-    /**
-     * Recursively delete folder and its subfolders + documents
-    */
-    _deleteFolderRecursively = async (folderId, userId,token) => {
-        const folder = await Folder.findOne({ _id: folderId, createdBy: userId });
-
-        if (!folder) {
-            throw new AppError(MESSAGES.FOLDER.ERROR.FOLDER_NOT_FOUND, STATUS_CODES.NOT_FOUND);
-        }
-
-        // // Delete all documents in this folder
-        // // await Document.deleteMany({ folder: folderId, createdBy: userId });
-        //
-        // // Find all subfolders of this folder
-        //
-        // const subfolders = await Folder.find({ parentFolder: folderId, createdBy: userId });
-        //
-        // // Recursively delete each subfolder
-        // for (const sub of subfolders) {
-        //     await this._deleteFolderRecursively(sub._id, userId);
-        // }
-        //
-        // // Delete this folder
-        // await Folder.deleteOne({ _id: folderId, createdBy: userId });
-        await deleteFolderRecursively(folderId, userId,token);
-
-        return true;
     };
 
     /**

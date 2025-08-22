@@ -62,10 +62,11 @@ class DocumentController {
         if (file) {
             const originalName = path.parse(file.originalname).name;
             const ext = path.extname(file.originalname);
-            const finalFileName = `${Date.now()}_${originalName}${ext}`;
+            const finalFileName = `${Date.now()}_${originalName}_v${versionNumber}${ext}`;
             const finalPath = path.join(folderPath, finalFileName);
 
-            await fs.rename(file.path, finalPath);
+            await fs.copyFileSync(file.path, finalPath);
+            await fs.unlinkSync(file.path);
             fileUrl = path.relative(process.cwd(), finalPath);
         }
 
@@ -124,7 +125,6 @@ class DocumentController {
             throw new AppError(MESSAGES.DOCUMENT.ERROR.DOCUMENT_NOT_FOUND, STATUS_CODES.NOT_FOUND);
         }
 
-        // Delete all version files from storage
         for (const version of doc.versions) {
             if (version.fileUrl) {
                 const filePath = path.join(process.env.UPLOAD_ROOT || "uploads", version.fileUrl);

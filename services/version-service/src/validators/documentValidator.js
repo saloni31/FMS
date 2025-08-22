@@ -30,7 +30,14 @@ export const addVersionSchema = Joi.object({
         "string.base": MESSAGES.VALIDATION.DOCUMENT.VERSION_STRING,
         "string.empty": MESSAGES.VALIDATION.DOCUMENT.VERSION_REQUIRED,
         "any.required": MESSAGES.VALIDATION.DOCUMENT.VERSION_REQUIRED
-    })
+    }),
+    folder: Joi.string()
+        .required()
+        .messages({
+            "string.base": MESSAGES.VALIDATION.DOCUMENT.FOLDER_STRING,
+            "string.empty": MESSAGES.VALIDATION.DOCUMENT.FOLDER_REQUIRED,
+            "any.required": MESSAGES.VALIDATION.DOCUMENT.FOLDER_REQUIRED,
+        }),
 });
 
 export const updateDocumentSchema = Joi.object({
