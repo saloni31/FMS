@@ -7,7 +7,6 @@ export const handleControllerError = (res, error) => {
         return errorResponse(res, error.message, error.statusCode);
     }
 
-    // fallback
     return errorResponse(
         res,
         error.message || "Internal Server Error",

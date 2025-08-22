@@ -1,5 +1,7 @@
 import axios from "axios";
-import AppError from "../utils/appError.js";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const HIERARCHY_SERVICE_URL = process.env.HIERARCHY_SERVICE_URL || "http://fms_hierarchy_service:3000";
 

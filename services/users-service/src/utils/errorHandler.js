@@ -2,12 +2,12 @@ import { errorResponse } from "./response.js";
 import AppError from "./appError.js";
 import { STATUS_CODES } from "@fms/common-auth";
 
+// Centralized error handling for controllers
 export const handleControllerError = (res, error) => {
     if (error instanceof AppError) {
         return errorResponse(res, error.message, error.statusCode);
     }
 
-    // fallback
     return errorResponse(
         res,
         error.message || "Internal Server Error",

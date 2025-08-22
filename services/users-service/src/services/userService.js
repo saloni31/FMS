@@ -5,7 +5,11 @@ import { MESSAGES } from "../constants/messageConstants.js";
 import { generateToken, STATUS_CODES } from "@fms/common-auth";
 
 class UserService {
-    // Register User
+    /**
+     * Function to register a new user
+     * @param {*} userData 
+     * @returns Registered user data without password
+     */
     register = async (userData) => {
         const { username, email, password } = userData;
 
@@ -37,6 +41,11 @@ class UserService {
         };
     };
 
+    /**
+     * Function to login a user
+     * @param {*} param0 
+     * @returns JWT token and user data
+     */
     login = async ({ email, password }) => {
         const user = await User.findOne({ email });
         if (!user) {
@@ -48,7 +57,6 @@ class UserService {
             throw new AppError(MESSAGES.USER.ERROR.INVALID_CREDENTIALS, STATUS_CODES.UNAUTHORIZED);
         }
 
-        // payload kept minimal; add only what other services need
         const token = generateToken({
             userId: String(user._id),
             username: user.username,

@@ -3,6 +3,11 @@ import { MESSAGES } from "../constants/messageConstants.js";
 import { STATUS_CODES } from "@fms/common-auth";
 import mongoose from "mongoose";
 
+/**
+ * Middleware to validate a specific URL parameter as a valid MongoDB ObjectId.
+ * @param {*} paramName 
+ * @returns 
+ */
 export const validateParam = (paramName) => {
     return (req, res, next) => {
         // explicitly check param existence

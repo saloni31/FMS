@@ -1,5 +1,7 @@
 import { MESSAGES } from "../constants/messageConstants.js";
 import { STATUS_CODES } from "@fms/common-auth";
+
+// Function to send a standardized success response
 export const successResponse = (res, data = {}, message = MESSAGES.COMMON.SUCCESS, statusCode = STATUS_CODES.SUCCESS) => {
     return res.status(statusCode).json({
         status: statusCode,
@@ -9,6 +11,7 @@ export const successResponse = (res, data = {}, message = MESSAGES.COMMON.SUCCES
     });
 };
 
+// Function to send a standardized error response
 export const errorResponse = (res, error = MESSAGES.COMMON.SERVER_ERROR, statusCode = STATUS_CODES.SERVER_ERROR) => {
     return res.status(statusCode).json({
         status: statusCode,
@@ -17,6 +20,7 @@ export const errorResponse = (res, error = MESSAGES.COMMON.SERVER_ERROR, statusC
     });
 };
 
+// Function to send a standardized validation error response
 export const validationErrorResponse = (res, error, statusCode = STATUS_CODES.UNPROCESSABLE_ENTITY) => {
     return res.status(statusCode).json({
         status: statusCode,

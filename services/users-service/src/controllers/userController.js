@@ -5,6 +5,12 @@ import userService from "../services/userService.js";
 import { STATUS_CODES } from "@fms/common-auth";
 
 class UserController {
+    /**
+     * Function to register a new user
+     * @param {*} req 
+     * @param {*} res 
+     * @returns Registered user details
+     */
     register = async (req, res) => {
         try {
             const result = await userService.register(req.body);
@@ -14,6 +20,12 @@ class UserController {
         }
     }
 
+    /**
+     * Function to login a user
+     * @param {*} req 
+     * @param {*} res 
+     * @returns Logged in user details with token
+     */
     login = async (req, res) => {
         try {
             const result = await userService.login(req.body);

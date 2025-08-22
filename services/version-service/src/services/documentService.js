@@ -2,12 +2,12 @@ import Document from "../models/document.js";
 import fs from "fs";
 import path from "path";
 import AppError from "../utils/appError.js";
-import {STATUS_CODES} from "@fms/common-auth";
+import { STATUS_CODES } from "@fms/common-auth";
 import { MESSAGES } from "../constants/messageConstants.js";
-import {fetchFolderParents} from "./hierarchyClient.js";
+import { fetchFolderParents } from "./hierarchyClient.js";
 
 class DocumentController {
-    createDocument = async (userId, data, file,folderPath) => {
+    createDocument = async (userId, data, file, folderPath) => {
         const { title, content, folder } = data;
 
         // Check if document with same title exists in the folder
@@ -113,7 +113,7 @@ class DocumentController {
     };
 
 
-    filterDocuments = async (search, userId,token) => {
+    filterDocuments = async (search, userId, token) => {
         const query = { createdBy: userId };
         if (search) {
             query.$or = [

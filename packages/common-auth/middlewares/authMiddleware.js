@@ -1,6 +1,7 @@
 import { verifyToken } from "../utils/jwtUtils.js";
 import { STATUS_CODES } from "../constants/statusCodes.js";
 
+// Middleware is used to authenticate API calls using jwt token
 export const authenticate = (req, res, next) => {
     const authHeader = req.headers["authorization"];
     if (!authHeader || !authHeader.startsWith("Bearer ")) {

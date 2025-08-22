@@ -1,6 +1,9 @@
 import path from "path";
 import { fetchFolderParents } from "../services/hierarchyClient.js";
 import fs from "fs";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 export const resolveFolderPath = async (req, res, next) => {
     try {

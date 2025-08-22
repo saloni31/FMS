@@ -3,6 +3,12 @@ import { STATUS_CODES } from "@fms/common-auth";
 import { MESSAGES } from "../constants/messageConstants.js";
 import AppError from "../utils/appError.js";
 class FolderService {
+    /**
+     * Function to create a new folder
+     * @param {*} userId 
+     * @param {*} data 
+     * @returns created folder object
+     */
     createFolder = async (userId, data) => {
         // If parent folder id is provided and its not available then throw an error
         if (data.parentFolder) {
@@ -31,6 +37,13 @@ class FolderService {
         return folder;
     };
 
+    /**
+     * Function to update folder details
+     * @param {*} id 
+     * @param {*} data 
+     * @param {*} userId 
+     * @returns Updated folder object
+     */
     updateFolder = async (id, data, userId) => {
         // Check if another folder with same name exists at same level
         const existingFolder = await Folder.findOne({
@@ -53,6 +66,12 @@ class FolderService {
         return folder;
     };
 
+    /**
+     * Function to delete folder and its subfolders + documents
+     * @param {*} folderId 
+     * @param {*} userId 
+     * @returns Void
+     */
     deleteFolder = async (folderId, userId) => {
         await this._deleteFolderRecursively(folderId, userId);
         return {
@@ -60,10 +79,21 @@ class FolderService {
         };
     };
 
+    /**
+     * Function to get all root level folders for a user
+     * @param {*} userId 
+     * @returns Array of root level folders
+     */
     getRootFolders = async (userId) => {
         return await Folder.find({ createdBy: userId, parentFolder: null });
     };
 
+    /**
+     * Function to get contents of a folder (subfolders + documents)
+     * @param {*} userId 
+     * @param {*} folderId 
+     * @returns Array of subfolders and documents
+     */
     getFolderContent = async (userId, folderId) => {
         // Validate folder existence
         const folder = await Folder.findOne({ _id: folderId, createdBy: userId });
@@ -103,11 +133,16 @@ class FolderService {
         return true;
     };
 
+    /**
+     * Function to get folder along with its parent hierarchy
+     * @param {*} folderId 
+     * @returns array representing folder hierarchy
+     */
     getFolderWithParents = async (folderId) => {
         let folder = await Folder.findById(folderId);
 
         if (!folder) {
-            throw new AppError(MESSAGES.FOLDER.ERROR.FOLDER_NOT_FOUND,STATUS_CODES.NOT_FOUND);
+            throw new AppError(MESSAGES.FOLDER.ERROR.FOLDER_NOT_FOUND, STATUS_CODES.NOT_FOUND);
         }
 
         const hierarchy = [];
