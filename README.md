@@ -35,8 +35,8 @@ The project uses **MongoDB**, **Docker**, **Express.js**, and **Swagger** for AP
 ### Clone Repository
 
 ```bash
-git clone <repository-url>
-cd <repository-directory>
+git clone https://github.com/saloni31/FMS
+cd FMS
 ```
 
 ## Environment Variables
