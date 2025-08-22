@@ -223,4 +223,46 @@ route.put(
     documentController.updateDocument
 );
 
+
+/**
+ * @swagger
+ * /documents/{id}/version:
+ *   post:
+ *     summary: Create a new version of a document
+ *     tags: [Documents]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: Document ID
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               versionNumber:
+ *                 type: string
+ *               file:
+ *                 type: string
+ *                 format: binary
+ *     responses:
+ *       200:
+ *         description: Document version created successfully
+ *       400:
+ *         description: Bad request
+ *       404:
+ *         description: Document not found
+ */
+route.post(
+    "/documents/:id/version",
+    authenticate,
+    uploadFile.single("file"),
+    resolveFolderPath,
+    validate(addVersionSchema),
+    documentController.createDocumentVersion
+);
 export default route;

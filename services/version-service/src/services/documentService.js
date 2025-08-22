@@ -2,12 +2,13 @@ import Document from "../models/document.js";
 import fs from "fs";
 import path from "path";
 import AppError from "../utils/appError.js";
-import { STATUS_CODES } from "@fms/common-auth";
+import {STATUS_CODES} from "@fms/common-auth";
 import { MESSAGES } from "../constants/messageConstants.js";
-import { fetchFolderParents } from "./hierarchyClient.js";
+import {fetchFolderParents} from "./hierarchyClient.js";
+import mongoose from "mongoose";
 
 class DocumentController {
-    createDocument = async (userId, data, file, folderPath) => {
+    createDocument = async (userId, data, file,folderPath) => {
         const { title, content, folder } = data;
 
         // Check if document with same title exists in the folder
@@ -22,14 +23,13 @@ class DocumentController {
             // Ensure folder exists
             fs.mkdirSync(folderPath, { recursive: true });
 
-            // Generate unique file name
+            const originalName = path.parse(file.originalname).name;
             const ext = path.extname(file.originalname);
-            const finalFileName = `${Date.now()}${ext}`;
+            const finalFileName = `${Date.now()}_${originalName}${ext}`;
+
             const finalPath = path.join(folderPath, finalFileName);
 
-            // Copy file from tmp -> final folder (safe across devices)
             await fs.copyFileSync(file.path, finalPath);
-            // Optionally delete tmp file
             await fs.unlinkSync(file.path);
 
             const uploadsRoot = process.env.UPLOAD_ROOT || path.join(process.cwd(), "uploads");
@@ -54,6 +54,32 @@ class DocumentController {
         return doc;
     };
 
+    createDocumentVersion = async (documentId, userId, versionNumber, file, folderPath) => {
+        const doc = await Document.findById(documentId);
+        if (!doc) throw new AppError(MESSAGES.DOCUMENT.ERROR.DOCUMENT_NOT_FOUND, STATUS_CODES.NOT_FOUND);
+
+        let fileUrl = "";
+        if (file) {
+            const originalName = path.parse(file.originalname).name;
+            const ext = path.extname(file.originalname);
+            const finalFileName = `${Date.now()}_${originalName}${ext}`;
+            const finalPath = path.join(folderPath, finalFileName);
+
+            await fs.rename(file.path, finalPath);
+            fileUrl = path.relative(process.cwd(), finalPath);
+        }
+
+        const newVersion = {
+            version: versionNumber,
+            fileUrl,
+            uploadedAt: new Date(),
+        };
+
+        doc.versions.push(newVersion);
+        await doc.save();
+
+        return newVersion;
+    };
     getDocumentById = async (documentId) => {
         const doc = await Document.findById(documentId).lean();
 
@@ -113,7 +139,8 @@ class DocumentController {
     };
 
 
-    filterDocuments = async (search, userId, token) => {
+    filterDocuments = async (search, userId,token) => {
+        console.log("filterDocuments", search, userId);
         const query = { createdBy: userId };
         if (search) {
             query.$or = [
@@ -145,6 +172,9 @@ class DocumentController {
     };
 
     countDocuments = async (userId) => {
+        if (!mongoose.Types.ObjectId.isValid(userId)) {
+            return { totalDocuments: 0 };
+        }
         const totalDocuments = await Document.countDocuments({ createdBy: userId });
         return { totalDocuments };
     };

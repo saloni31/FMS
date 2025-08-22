@@ -8,8 +8,8 @@ import AppError from "../utils/appError.js";
 class DocumentController {
     /**
      * Function to create a new document
-     * @param {*} req 
-     * @param {*} res 
+     * @param {*} req
+     * @param {*} res
      * @returns Created document details
      */
     createDocument = async (req, res) => {
@@ -25,10 +25,35 @@ class DocumentController {
         }
     };
 
+    createDocumentVersion = async (req, res) => {
+        try {
+            const documentId = req.params.id;
+            const { versionNumber } = req.body;
+
+            if (!req.file) {
+                throw new AppError(MESSAGES.VALIDATION.DOCUMENT.FILE_REQUIRED, STATUS_CODES.BAD_REQUEST);
+            }
+
+            const userId = req.user.userId;
+
+            const version = await documentService.createDocumentVersion(
+                documentId,
+                userId,
+                versionNumber,
+                req.file,
+                req.folderPath
+            );
+
+            return successResponse(res, version, MESSAGES.DOCUMENT.SUCCESS.DOCUMENT_VERSION_CREATED);
+        } catch (err) {
+            return handleControllerError(res, err);
+        }
+    };
+
     /**
      * Function to get document details by ID
-     * @param {*} req 
-     * @param {*} res 
+     * @param {*} req
+     * @param {*} res
      * @returns Document details
      */
     getDocumentDetails = async (req, res) => {
@@ -49,8 +74,8 @@ class DocumentController {
 
     /**
      * Function to get all versions of a document
-     * @param {*} req 
-     * @param {*} res 
+     * @param {*} req
+     * @param {*} res
      * @returns Document versions
      */
     getDocumentVersions = async (req, res) => {
@@ -71,8 +96,8 @@ class DocumentController {
 
     /**
      * Function to delete a document by ID
-     * @param {*} req 
-     * @param {*} res 
+     * @param {*} req
+     * @param {*} res
      * @returns Void
      */
     deleteDocument = async (req, res) => {
@@ -93,8 +118,8 @@ class DocumentController {
 
     /**
      * Function to filter documents based on search criteria
-     * @param {*} req 
-     * @param {*} res 
+     * @param {*} req
+     * @param {*} res
      * @returns Filtered documents
      */
     filterDocuments = async (req, res) => {
@@ -116,13 +141,15 @@ class DocumentController {
 
     /**
      * Function to count total documents for a user
-     * @param {*} req 
-     * @param {*} res 
+     * @param {*} req
+     * @param {*} res
      * @returns Total document count
      */
     countDocuments = async (req, res) => {
         try {
-            const total = await documentService.countDocuments(req.user.userId);
+            const userId = req.user.userId;
+
+            const total = await documentService.countDocuments(userId);
             return successResponse(
                 res,
                 total,
@@ -136,8 +163,8 @@ class DocumentController {
 
     /**
      * Function to update document details
-     * @param {*} req 
-     * @param {*} res 
+     * @param {*} req
+     * @param {*} res
      * @returns Updated document details
      */
     updateDocument = async (req, res) => {
