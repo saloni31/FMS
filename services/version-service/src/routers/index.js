@@ -265,4 +265,17 @@ route.post(
     validate(addVersionSchema),
     documentController.createDocumentVersion
 );
+
+route.get(
+    "/documents/folder/:folderId",
+    authenticate,
+    documentController.getDocumentsByFolder
+);
+
+
+route.delete(
+    "/documents/folder/:folderId",
+    authenticate,
+    documentController.deleteDocumentsByFolder
+);
 export default route;

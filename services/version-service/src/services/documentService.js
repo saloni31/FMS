@@ -140,7 +140,6 @@ class DocumentController {
 
 
     filterDocuments = async (search, userId,token) => {
-        console.log("filterDocuments", search, userId);
         const query = { createdBy: userId };
         if (search) {
             query.$or = [
@@ -148,7 +147,6 @@ class DocumentController {
                 { content: { $regex: search, $options: "i" } }
             ];
         }
-
         const docs = await Document.find(query).lean();
 
         const result = [];
@@ -203,6 +201,35 @@ class DocumentController {
         await document.save();
 
         return document;
+    };
+
+    getDocumentsByFolder = async (folderId, userId) => {
+        const documents = await Document.find({
+            folder: folderId,
+            createdBy: userId
+        }).lean();
+
+        return documents;
+    };
+
+    deleteDocumentsByFolder = async (folderId, userId) => {
+        const documents = await Document.find({ folder: folderId, createdBy: userId }).lean();
+
+        for (const doc of documents) {
+            if (doc.versions && doc.versions.length > 0) {
+                for (const version of doc.versions) {
+                    const filePath = path.join(process.cwd(), version.fileUrl);
+                    if (fs.existsSync(filePath)) {
+                        fs.unlinkSync(filePath);
+                    }
+                }
+            }
+        }
+
+        // Delete documents from DB
+        const deleted = await Document.deleteMany({ folder: folderId, createdBy: userId });
+
+        return { deletedCount: deleted.deletedCount };
     };
 
 }

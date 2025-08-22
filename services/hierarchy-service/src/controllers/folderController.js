@@ -43,7 +43,8 @@ class FolderController {
      */
     deleteFolder = async (req, res) => {
         try {
-            const result = await folderService.deleteFolder(req.params.id, req.user.userId);
+            const token = req.headers.authorization?.split(" ")[1];
+            const result = await folderService.deleteFolder(req.params.id, req.user.userId,token);
             return successResponse(res, result, MESSAGES.FOLDER.SUCCESS.FOLDER_DELETED, STATUS_CODES.DELETED);
         } catch (err) {
             return handleControllerError(res, err);
@@ -73,7 +74,8 @@ class FolderController {
      */
     getFolderContent = async (req, res) => {
         try {
-            const content = await folderService.getFolderContent(req.user.userId, req.params.folderId);
+            const token = req.headers.authorization?.split(" ")[1];
+            const content = await folderService.getFolderContent(req.user.userId, req.params.folderId,token);
             return successResponse(res, content, MESSAGES.FOLDER.SUCCESS.FOLDER_CONTENT_FETCHED, STATUS_CODES.SUCCESS);
         } catch (err) {
             return handleControllerError(res, err);

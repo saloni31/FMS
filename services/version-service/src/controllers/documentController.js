@@ -184,6 +184,42 @@ class DocumentController {
             return handleControllerError(res, err);
         }
     };
+
+    getDocumentsByFolder = async (req, res) => {
+        try {
+            const { folderId } = req.params;
+            const userId = req.user.userId;
+
+            const docs = await documentService.getDocumentsByFolder(folderId, userId);
+
+            return successResponse(
+                res,
+                docs,
+                MESSAGES.DOCUMENT.SUCCESS.DOCUMENT_FETCHED,
+                STATUS_CODES.SUCCESS
+            );
+        } catch (err) {
+            return handleControllerError(res, err);
+        }
+    };
+
+    deleteDocumentsByFolder = async (req, res) => {
+        try {
+            const { folderId } = req.params;
+            const userId = req.user.userId;
+
+            const result = await documentService.deleteDocumentsByFolder(folderId, userId);
+
+            return successResponse(
+                res,
+                result,
+                MESSAGES.DOCUMENT.SUCCESS.DOCUMENT_DELETED,
+                STATUS_CODES.SUCCESS
+            );
+        } catch (err) {
+            return handleControllerError(res, err);
+        }
+    };
 }
 
 export default new DocumentController();
